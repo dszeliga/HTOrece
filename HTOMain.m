@@ -25,6 +25,8 @@ guidata(hObject, handles);
 set(handles.axesVIS, 'visible', 'off')
 set(handles.axesIR, 'visible', 'off')
 set(handles.axesIRVIS, 'visible', 'off')
+set(handles.axesStatisticHands, 'visible', 'off')
+set(handles.axesStatisticPoint, 'visible', 'off')
 
 function varargout = HTOMain_OutputFcn(hObject, eventdata, handles) 
 varargout{1} = handles.output;
@@ -76,6 +78,32 @@ if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColo
     set(handles.sldChangeImage, 'Value', 1)
     set(handles.sldChangeImage, 'Max', 5);
     set(handles.sldChangeImage, 'SliderStep', [1/(5-1) , 10/(5-1) ]);
-    
-    
 end
+
+
+% --- Executes on button press in btnSelectPointsVIS.
+function btnSelectPointsVIS_Callback(hObject, eventdata, handles)
+% hObject    handle to btnSelectPointsVIS (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in btnSelectPointsIR.
+function btnSelectPointsIR_Callback(hObject, eventdata, handles)
+% hObject    handle to btnSelectPointsIR (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in btnSelectPoint.
+function btnSelectPoint_Callback(hObject, eventdata, handles)
+% hObject    handle to btnSelectPoint (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in btnAnalyze.
+function btnAnalyze_Callback(hObject, eventdata, handles)
+% hObject    handle to btnAnalyze (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
