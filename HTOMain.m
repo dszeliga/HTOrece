@@ -69,7 +69,9 @@ try
         imshow(imagesIR{value});
         axes(handles.axesVIS);
         imshow(imagesVIS{value});
-        fusionImage(handles);
+        imageFusion=imread(sprintf('fusion%d.jpg', value));
+        axes(handles.axesIRVIS);
+        imshow( imageFusion, 'initialMagnification', 'fit');
     else
         value=get(hObject, 'Value');
         axes(handles.axesIR);
@@ -96,8 +98,9 @@ global value falseColorOverlay fusionDone x y
 if(fusionDone==true)
     [x,y]=ginput(1);
     value=get(hObject, 'Value');
+    imageFusion=imread(sprintf('fusion%d.jpg', value));
     axes(handles.axesIRVIS);
-    imshow( falseColorOverlay, 'initialMagnification', 'fit');
+    imshow( imageFusion, 'initialMagnification', 'fit');
     hold on;
     plot(x,y,'.y', 'Markersize', 15);
 else
@@ -105,3 +108,11 @@ else
 end
 
 function btnAnalyze_Callback(hObject, eventdata, handles)
+global x y imagesIR
+pointsRGBfusion=[];
+for i=1:length(imagesIR)
+imageFusion=imread(sprintf('fusion%d.jpg', i));
+pointsRGBfusion(:,i) = [imageFusion(round(x),round(y),1), ...
+    imageFusion(round(x),round(y),2), ...
+    imageFusion(round(x),round(y),3)];
+end
