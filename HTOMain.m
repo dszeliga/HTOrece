@@ -133,4 +133,7 @@ for i=1:length(imagesIR)
     end
     temperature(i)=(50*index)/240;
 end
-disp(  temperature)
+time = [0, 3, 5, 7, 12];
+
+axes(handles.axesStatisticHands);
+plot(time, temperature, '-r');
