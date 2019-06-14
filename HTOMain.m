@@ -20,6 +20,7 @@ end
 % End initialization code - DO NOT EDIT
 
 function HTOMain_OpeningFcn(hObject, eventdata, handles, varargin)
+global fusionDone
 handles.output = hObject;
 guidata(hObject, handles);
 set(handles.sldChangeImage, 'Min', 1);
@@ -31,6 +32,7 @@ set(handles.axesIR, 'visible', 'off');
 set(handles.axesIRVIS, 'visible', 'off')
 set(handles.axesStatisticHands, 'visible', 'off');
 set(handles.axesStatisticPoint, 'visible', 'off');
+fusionDone=false;
 
 function varargout = HTOMain_OutputFcn(hObject, eventdata, handles)
 varargout{1} = handles.output;
@@ -38,42 +40,40 @@ varargout{1} = handles.output;
 function btnReadVIS_Callback(hObject, eventdata, handles)
 global imagesVIS
 try
-imagesVIS=ReadImages('*.JPG');
-axes(handles.axesVIS);
-imshow(imagesVIS{1});
+    imagesVIS=ReadImages('*.JPG');
+    axes(handles.axesVIS);
+    imshow(imagesVIS{1});
 catch
-    msgbox('Nie wczytano serii zdjêæ!', 'B³¹d','error');
+    msgbox('Anulowano wczytywanie serii zdjêæ!', 'B³¹d','error');
 end
 
 function btnReadIR_Callback(hObject, eventdata, handles)
 global imagesIR
 try
-imagesIR=ReadImages('*.png');
-axes(handles.axesIR);
-imshow(imagesIR{1});
+    imagesIR=ReadImages('*.png');
+    axes(handles.axesIR);
+    imshow(imagesIR{1});
 catch
-    msgbox('Nie wczytano serii zdjêæ!', 'B³¹d','error');
+    msgbox('Anulowano wczytywanie serii zdjêæ!', 'B³¹d','error');
 end
 
 function btnApply_Callback(hObject, eventdata, handles)
-global imagesVIS imagesIR
+global imagesVIS imagesIR falseColorOverlay value fusionDone
+fusionDone=true;
 vis_points = [2.805500000000001e+03 1.389500000000001e+03; 4.257500000000001e+03 1.179500000000001e+03; 3.417500000000001e+03 2.403500000000001e+03; 4.083500000000000e+03 2.295500000000000e+03];
 ir_points = [20.0000 68.0000; 209.0000 50.0000; 88.5925 197.7254; 173.6792 187.5520];
-im_vis = imread('images/_MG_1464.JPG');
-im_ir = imread('images/IMGT0450.PNG');
-value=get(hObject, 'Value');
+% im_vis = imread('images/_MG_1464.JPG');
+% im_ir = imread('images/IMGT0450.PNG');
 im_hands_vis = imagesVIS{value};
 im_hands_ir = imagesIR{value};
 tform = fitgeotrans(vis_points, ir_points, 'similarity');
 fusion = imwarp(im_hands_vis, tform, 'OutputView', imref2d(size(im_hands_ir)));
 axes(handles.axesIRVIS);
-falseColorOverlay = imfuse(im_hands_ir, fusion);
+falseColorOverlay = imfuse(im_hands_ir, fusion, 'ColorChannels', [2 1 2]);
 imshow( falseColorOverlay, 'initialMagnification', 'fit');
 
-
-% --- Executes on slider movement.
 function sldChangeImage_Callback(hObject, eventdata, handles)
-global imagesVIS imagesIR
+global imagesVIS imagesIR value
 try
     value=get(hObject, 'Value');
     axes(handles.axesIR);
@@ -85,37 +85,26 @@ catch
     set(handles.sldChangeImage, 'Value', 1)
 end
 
-% --- Executes during object creation, after setting all properties.
 function sldChangeImage_CreateFcn(hObject, eventdata, handles)
-% Hint: slider controls usually have a light gray background.
 if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor',[.9 .9 .9]);
 end
 
-
-% --- Executes on button press in btnSelectPointsVIS.
 function btnSelectPointsVIS_Callback(hObject, eventdata, handles)
-% hObject    handle to btnSelectPointsVIS (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
-
-% --- Executes on button press in btnSelectPointsIR.
 function btnSelectPointsIR_Callback(hObject, eventdata, handles)
-% hObject    handle to btnSelectPointsIR (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
-
-% --- Executes on button press in btnSelectPoint.
 function btnSelectPoint_Callback(hObject, eventdata, handles)
-% hObject    handle to btnSelectPoint (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+global value falseColorOverlay fusionDone
+if(fusionDone==true)
+    [x,y]=ginput(1);
+    value=get(hObject, 'Value');
+    axes(handles.axesIRVIS);
+    imshow( falseColorOverlay, 'initialMagnification', 'fit');
+    hold on;
+    plot(x,y,'.y', 'Markersize', 15);
+else
+    msgbox('Nie wykonano fuzji zdjêæ!!', 'Warning','error');
+end
 
-
-% --- Executes on button press in btnAnalyze.
 function btnAnalyze_Callback(hObject, eventdata, handles)
-% hObject    handle to btnAnalyze (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
