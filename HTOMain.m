@@ -111,8 +111,9 @@ function btnAnalyze_Callback(hObject, eventdata, handles)
 global x y imagesIR
 pointsRGBfusion=[];
 for i=1:length(imagesIR)
-imageFusion=imread(sprintf('fusion%d.jpg', i));
-pointsRGBfusion(:,i) = [imageFusion(round(x),round(y),1), ...
+%imageFusion=imread(sprintf('fusion%d.jpg', i));
+imageFusion=imagesIR{i};
+pointsRGBfusion(i,:) = [imageFusion(round(x),round(y),1), ...
     imageFusion(round(x),round(y),2), ...
     imageFusion(round(x),round(y),3)];
 end
