@@ -111,8 +111,20 @@ function btnAnalyze_Callback(hObject, eventdata, handles)
 global x y imagesIR
 pointsRGBfusion=[];
 for i=1:length(imagesIR)
-imageFusion=imread(sprintf('fusion%d.jpg', i));
-pointsRGBfusion(:,i) = [imageFusion(round(x),round(y),1), ...
-    imageFusion(round(x),round(y),2), ...
-    imageFusion(round(x),round(y),3)];
+    %imageFusion=imread(sprintf('fusion%d.jpg', i));
+    imageFusion=imagesIR{i};
+    pointsRGBfusion(i,:) = [imageFusion(round(x),round(y),1), ...
+        imageFusion(round(x),round(y),2), ...
+        imageFusion(round(x),round(y),3)];
+    
+    scaleBar=[imageFusion(5,:,1); imageFusion(5,:,2); imageFusion(5,:,3)];
+    
+    for j=1:size(scaleBar,2);
+        if(abs(scaleBar(1,j)-pointsRGBfusion(i,1))<=5 && ...
+                abs(scaleBar(2,j)-pointsRGBfusion(i,2))<=5 && ...
+                abs(scaleBar(3,j)-pointsRGBfusion(i,3))<=5)
+            index=j;
+        end
+    end
+    temperature=0;
 end

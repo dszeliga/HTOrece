@@ -20,11 +20,12 @@ end
 % End initialization code - DO NOT EDIT
 
 function HTOMain_OpeningFcn(hObject, eventdata, handles, varargin)
-global fusionDone
+global fusionDone value
 handles.output = hObject;
 guidata(hObject, handles);
 set(handles.sldChangeImage, 'Min', 1);
 set(handles.sldChangeImage, 'Value', 1);
+value=get(handles.sldChangeImage, 'Value');
 set(handles.sldChangeImage, 'Max', 5);
 set(handles.sldChangeImage, 'SliderStep', [1/(5-1) , 10/(5-1) ]);
 set(handles.axesVIS, 'visible', 'off');
@@ -61,7 +62,7 @@ function btnApply_Callback(hObject, eventdata, handles)
 fusionImage(handles);
 
 function sldChangeImage_Callback(hObject, eventdata, handles)
-global imagesVIS imagesIR value fusionDone
+global imagesVIS imagesIR value fusionDone x y
 try
     if(fusionDone==true)
         value=get(hObject, 'Value');
@@ -72,6 +73,10 @@ try
         imageFusion=imread(sprintf('fusion%d.jpg', value));
         axes(handles.axesIRVIS);
         imshow( imageFusion, 'initialMagnification', 'fit');
+        if(~isempty(x))
+            hold on;
+            plot(x,y,'.y', 'Markersize', 15);
+        end
     else
         value=get(hObject, 'Value');
         axes(handles.axesIR);
@@ -94,10 +99,9 @@ function btnSelectPointsVIS_Callback(hObject, eventdata, handles)
 function btnSelectPointsIR_Callback(hObject, eventdata, handles)
 
 function btnSelectPoint_Callback(hObject, eventdata, handles)
-global value falseColorOverlay fusionDone x y
+global value fusionDone x y
 if(fusionDone==true)
-    [x,y]=ginput(1);
-    value=get(hObject, 'Value');
+    [x,y]=ginput(1);    
     imageFusion=imread(sprintf('fusion%d.jpg', value));
     axes(handles.axesIRVIS);
     imshow( imageFusion, 'initialMagnification', 'fit');
@@ -111,9 +115,22 @@ function btnAnalyze_Callback(hObject, eventdata, handles)
 global x y imagesIR
 pointsRGBfusion=[];
 for i=1:length(imagesIR)
-%imageFusion=imread(sprintf('fusion%d.jpg', i));
-imageFusion=imagesIR{i};
-pointsRGBfusion(i,:) = [imageFusion(round(x),round(y),1), ...
-    imageFusion(round(x),round(y),2), ...
-    imageFusion(round(x),round(y),3)];
+    %imageFusion=imread(sprintf('fusion%d.jpg', i));
+    imageFusion=imagesIR{i};
+    pointsRGBfusion(i,:) = [imageFusion(round(x),round(y),1), ...
+        imageFusion(round(x),round(y),2), ...
+        imageFusion(round(x),round(y),3)];
+    
+    scaleBar=[imageFusion(5,:,1); imageFusion(5,:,2); imageFusion(5,:,3)];
+    
+    for j=1:size(scaleBar,2);
+        if(abs(double(scaleBar(1,j))-double(pointsRGBfusion(i,1)))<=20 && ...
+                abs(double(scaleBar(2,j))-double(pointsRGBfusion(i,2)))<=20 && ...
+                abs(double(scaleBar(3,j))-double(pointsRGBfusion(i,3)))<=20)
+            index=j;
+            break;
+        end
+    end
+    temperature(i)=(50*index)/240;
 end
+disp(  temperature)
