@@ -20,7 +20,7 @@ end
 % End initialization code - DO NOT EDIT
 
 function HTOMain_OpeningFcn(hObject, eventdata, handles, varargin)
-global fusionDone value
+global fusionDone value VISPoints IRPoints
 handles.output = hObject;
 guidata(hObject, handles);
 set(handles.sldChangeImage, 'Min', 1);
@@ -33,6 +33,8 @@ set(handles.axesIR, 'visible', 'off');
 set(handles.axesIRVIS, 'visible', 'off')
 set(handles.axesStatisticHands, 'visible', 'off');
 set(handles.axesStatisticPoint, 'visible', 'off');
+VISPoints = [];
+IRPoints = [];
 fusionDone=false;
 
 function varargout = HTOMain_OutputFcn(hObject, eventdata, handles)
@@ -95,8 +97,26 @@ if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColo
 end
 
 function btnSelectPointsVIS_Callback(hObject, eventdata, handles)
+global VISPoints
+image = imread('images/_MG_1464.JPG');
+figure
+imshow(image)
+[x_vis, y_vis] = ginput(4);
+close
+for i=1:1:4
+    VISPoints = [VISPoints; x_vis(i) y_vis(i)];
+end
 
 function btnSelectPointsIR_Callback(hObject, eventdata, handles)
+global IRPoints
+image = imread('images/IMGT0450.PNG');
+figure
+imshow(image)
+[x_ir, y_ir] = ginput(4);
+close
+for i=1:1:4
+    IRPoints = [IRPoints; x_ir(i) y_ir(i)];
+end
 
 function btnSelectPoint_Callback(hObject, eventdata, handles)
 global value fusionDone x y
