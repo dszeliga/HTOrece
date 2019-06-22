@@ -110,51 +110,50 @@ end
 function btnSelectPointsVIS_Callback(hObject, eventdata, handles)
 global VISPoints value imagesVIS IRPoints
 try
-    figure
-    imshow(imagesVIS{value})
-    [x_vis(1), y_vis(1)] = ginput(1);
-    hold on
-    plot(x_vis(1),y_vis(1),'.y', 'Markersize', 15)
-    [x_vis(2), y_vis(2)] = ginput(1);
-    plot(x_vis(2),y_vis(2),'.y', 'Markersize', 15)
-    [x_vis(3), y_vis(3)] = ginput(1);
-    plot(x_vis(3),y_vis(3),'.y', 'Markersize', 15)
-    [x_vis(4), y_vis(4)] = ginput(1);
-    plot(x_vis(4),y_vis(4),'.y', 'Markersize', 15)
-    close
-    for i=1:1:4
-        VISPoints = [VISPoints; x_vis(i) y_vis(i)];
-    end
-    if(~isempty(VISPoints) && ~isempty(IRPoints))
-        set(handles.btnApply, 'Enable', 'on');
-    end
+figure
+imshow(imagesVIS{value})
+[x_vis(1), y_vis(1)] = ginput(1);
+hold on
+plot(x_vis(1),y_vis(1),'.y', 'Markersize', 15)
+[x_vis(2), y_vis(2)] = ginput(1);
+plot(x_vis(2),y_vis(2),'.y', 'Markersize', 15)
+[x_vis(3), y_vis(3)] = ginput(1);
+plot(x_vis(3),y_vis(3),'.y', 'Markersize', 15)
+[x_vis(4), y_vis(4)] = ginput(1);
+plot(x_vis(4),y_vis(4),'.y', 'Markersize', 15)
+close
+for i=1:1:4
+    VISPoints = [VISPoints; x_vis(i) y_vis(i)];
+end
+if(~isempty(VISPoints) && ~isempty(IRPoints))
+    set(handles.btnApply, 'Enable', 'on');
+end
 catch
-    msgbox('Nie zaznaczono czterech punktów potrzebnych do fuzji.', 'Warning','error');
     
 end
 function btnSelectPointsIR_Callback(hObject, eventdata, handles)
 global IRPoints value imagesIR VISPoints
 try
-    figure
-    imshow(imagesIR{value})
-    [x_ir(1), y_ir(1)] = ginput(1);
-    hold on
-    plot(x_ir(1),y_ir(1),'.y', 'Markersize', 15)
-    [x_ir(2), y_ir(2)] = ginput(1);
-    plot(x_ir(2),y_ir(2),'.y', 'Markersize', 15)
-    [x_ir(3), y_ir(3)] = ginput(1);
-    plot(x_ir(3),y_ir(3),'.y', 'Markersize', 15)
-    [x_ir(4), y_ir(4)] = ginput(1);
-    plot(x_ir(4),y_ir(4),'.y', 'Markersize', 15)
-    close
-    for i=1:4
-        IRPoints = [IRPoints; x_ir(i) y_ir(i)];
-    end
-    if(~isempty(VISPoints) && ~isempty(IRPoints))
-        set(handles.btnApply, 'Enable', 'on');
-    end
+figure
+imshow(imagesIR{value})
+[x_ir(1), y_ir(1)] = ginput(1);
+hold on
+plot(x_ir(1),y_ir(1),'.y', 'Markersize', 15)
+[x_ir(2), y_ir(2)] = ginput(1);
+plot(x_ir(2),y_ir(2),'.y', 'Markersize', 15)
+[x_ir(3), y_ir(3)] = ginput(1);
+plot(x_ir(3),y_ir(3),'.y', 'Markersize', 15)
+[x_ir(4), y_ir(4)] = ginput(1);
+plot(x_ir(4),y_ir(4),'.y', 'Markersize', 15)
+close
+for i=1:4
+    IRPoints = [IRPoints; x_ir(i) y_ir(i)];
+end
+if(~isempty(VISPoints) && ~isempty(IRPoints))
+    set(handles.btnApply, 'Enable', 'on');
+end
 catch
-    msgbox('Nie zaznaczono czterech punktów potrzebnych do fuzji.', 'Warning','error');
+    msgbox('Nie zaznaczono czterech punktów d', 'Warning','error'); 
 end
 
 function btnSelectPoint_Callback(hObject, eventdata, handles)
@@ -208,9 +207,9 @@ text(time(2), temperature(3)-0.2, num2str(round(temperature(3),2)), 'Color', 're
 text(time(3), temperature(4)-0.2, num2str(round(temperature(4),2)), 'Color', 'red');
 text(time(4), temperature(5)-0.2, num2str(round(temperature(5),2)), 'Color', 'red');
 text(time(5), temperature(6)-0.2, num2str(round(temperature(6),2)), 'Color', 'red');
-ax = handles.axesStatisticHands
-ax.XColor = 'w';
-ax.YColor = 'w';
+ax = handles.axesStatisticHands 
+ax.XColor = 'w'; 
+ax.YColor = 'w'; 
 
 
 
