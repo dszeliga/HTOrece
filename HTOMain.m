@@ -20,7 +20,7 @@ end
 % End initialization code - DO NOT EDIT
 
 function HTOMain_OpeningFcn(hObject, eventdata, handles, varargin)
-global fusionDone value VISPoints IRPoints x y
+global fusionDone value VISPoints IRPoints x y imagesVIS imagesIR
 handles.output = hObject;
 guidata(hObject, handles);
 set(handles.sldChangeImage, 'Min', 1);
@@ -32,7 +32,6 @@ set(handles.axesVIS, 'visible', 'off');
 set(handles.axesIR, 'visible', 'off');
 set(handles.axesIRVIS, 'visible', 'off')
 set(handles.axesStatisticHands, 'visible', 'off');
-set(handles.axesStatisticPoint, 'visible', 'off');
 set(handles.btnSelectPointsVIS, 'Enable', 'off');
 set(handles.btnSelectPointsIR, 'Enable', 'off');
 set(handles.btnApply, 'Enable', 'off');
@@ -44,27 +43,29 @@ y(1:6) = -1;
 VISPoints = [];
 IRPoints = [];
 fusionDone=false;
+imagesVIS = [];
+imagesIR = [];
 
 function varargout = HTOMain_OutputFcn(hObject, eventdata, handles)
 varargout{1} = handles.output;
 
 function btnReadVIS_Callback(hObject, eventdata, handles)
-global imagesVIS
+global imagesVIS value
 try
     imagesVIS=ReadImages('*.JPG');
     axes(handles.axesVIS);
-    imshow(imagesVIS{1});
+    imshow(imagesVIS{value});
     set(handles.btnSelectPointsVIS, 'Enable', 'on');
 catch
     msgbox('Anulowano wczytywanie serii zdjêæ!', 'B³¹d','error');
 end
 
 function btnReadIR_Callback(hObject, eventdata, handles)
-global imagesIR
+global imagesIR value
 try
     imagesIR=ReadImages('*.png');
     axes(handles.axesIR);
-    imshow(imagesIR{1});
+    imshow(imagesIR{value});
     set(handles.btnSelectPointsIR, 'Enable', 'on');
 catch
     msgbox('Anulowano wczytywanie serii zdjêæ!', 'B³¹d','error');
@@ -72,16 +73,13 @@ end
 
 function btnApply_Callback(hObject, eventdata, handles)
 fusionImage(handles);
+set(handles.btnSelectPoint, 'Enable', 'on');
 
 function sldChangeImage_Callback(hObject, eventdata, handles)
 global imagesVIS imagesIR value fusionDone x y
 try
+    value=get(hObject, 'Value');
     if(fusionDone==true)
-        value=get(hObject, 'Value');
-        axes(handles.axesIR);
-        imshow(imagesIR{value});
-        axes(handles.axesVIS);
-        imshow(imagesVIS{value});
         imageFusion=imread(sprintf('fusion%d.jpg', value));
         axes(handles.axesIRVIS);
         imshow( imageFusion, 'initialMagnification', 'fit');
@@ -89,10 +87,13 @@ try
             hold on;
             plot(x(value),y(value),'.y', 'Markersize', 15);
         end
-    else
-        value=get(hObject, 'Value');
+    end
+    
+    if(~isempty(imagesIR))
         axes(handles.axesIR);
         imshow(imagesIR{value});
+    end
+    if(~isempty(imagesVIS))
         axes(handles.axesVIS);
         imshow(imagesVIS{value});
     end
@@ -107,7 +108,7 @@ if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColo
 end
 
 function btnSelectPointsVIS_Callback(hObject, eventdata, handles)
-global VISPoints value imagesVIS
+global VISPoints value imagesVIS IRPoints
 figure
 imshow(imagesVIS{value})
 [x_vis(1), y_vis(1)] = ginput(1);
@@ -123,9 +124,12 @@ close
 for i=1:1:4
     VISPoints = [VISPoints; x_vis(i) y_vis(i)];
 end
+if(~isempty(VISPoints) && ~isempty(IRPoints))
+    set(handles.btnApply, 'Enable', 'on');
+end
 
 function btnSelectPointsIR_Callback(hObject, eventdata, handles)
-global IRPoints value imagesIR
+global IRPoints value imagesIR VISPoints
 figure
 imshow(imagesIR{value})
 [x_ir(1), y_ir(1)] = ginput(1);
@@ -141,6 +145,9 @@ close
 for i=1:4
     IRPoints = [IRPoints; x_ir(i) y_ir(i)];
 end
+if(~isempty(VISPoints) && ~isempty(IRPoints))
+    set(handles.btnApply, 'Enable', 'on');
+end
 
 function btnSelectPoint_Callback(hObject, eventdata, handles)
 global value fusionDone x y
@@ -153,6 +160,8 @@ if(fusionDone==true)
     imshow( imageFusion, 'initialMagnification', 'fit');
     hold on;
     plot(x(value),y(value),'.y', 'Markersize', 15);
+    set(handles.btnAnalyze, 'Enable', 'on');
+    set(handles.btnChangePoint, 'Enable', 'on');
 else
     msgbox('Nie wykonano fuzji zdjêæ!!', 'Warning','error');
 end
@@ -182,7 +191,18 @@ end
 time = [0, 3, 5, 7, 12];
 
 axes(handles.axesStatisticHands);
-plot(time, temperature(2:end), '-r');
+plot(time, temperature(2:end), '-*r');
+xlabel('Czas badania, min', 'Color', 'white');
+ylabel('Temperatura, \circC', 'Color', 'white');
+title('Zmiana temperatury w czasie w wybranym punkcie', 'Color', 'white');
+text(time(1), temperature(2)-0.2, num2str(round(temperature(2),2)), 'Color', 'red');
+text(time(2), temperature(3)-0.2, num2str(round(temperature(3),2)), 'Color', 'red');
+text(time(3), temperature(4)-0.2, num2str(round(temperature(4),2)), 'Color', 'red');
+text(time(4), temperature(5)-0.2, num2str(round(temperature(5),2)), 'Color', 'red');
+text(time(5), temperature(6)-0.2, num2str(round(temperature(6),2)), 'Color', 'red');
+ax = handles.axesStatisticHands 
+ax.XColor = 'w'; 
+ax.YColor = 'w'; 
 
 
 
@@ -197,6 +217,7 @@ if(fusionDone==true)
     imshow( imageFusion, 'initialMagnification', 'fit');
     hold on;
     plot(x(value),y(value),'.y', 'Markersize', 15);
+    btnAnalyze_Callback(hObject, eventdata, handles);
 else
     msgbox('Nie wykonano fuzji zdjêæ!!', 'Warning','error');
 end
