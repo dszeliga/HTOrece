@@ -33,6 +33,12 @@ set(handles.axesIR, 'visible', 'off');
 set(handles.axesIRVIS, 'visible', 'off')
 set(handles.axesStatisticHands, 'visible', 'off');
 set(handles.axesStatisticPoint, 'visible', 'off');
+set(handles.btnSelectPointsVIS, 'Enable', 'off');
+set(handles.btnSelectPointsIR, 'Enable', 'off');
+set(handles.btnApply, 'Enable', 'off');
+set(handles.btnSelectPoint, 'Enable', 'off');
+set(handles.btnAnalyze, 'Enable', 'off');
+set(handles.btnChangePoint, 'Enable', 'off');
 x(1:6) = -1;
 y(1:6) = -1;
 VISPoints = [];
@@ -48,6 +54,7 @@ try
     imagesVIS=ReadImages('*.JPG');
     axes(handles.axesVIS);
     imshow(imagesVIS{1});
+    set(handles.btnSelectPointsVIS, 'Enable', 'on');
 catch
     msgbox('Anulowano wczytywanie serii zdjêæ!', 'B³¹d','error');
 end
@@ -58,6 +65,7 @@ try
     imagesIR=ReadImages('*.png');
     axes(handles.axesIR);
     imshow(imagesIR{1});
+    set(handles.btnSelectPointsIR, 'Enable', 'on');
 catch
     msgbox('Anulowano wczytywanie serii zdjêæ!', 'B³¹d','error');
 end
