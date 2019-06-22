@@ -20,19 +20,21 @@ end
 % End initialization code - DO NOT EDIT
 
 function HTOMain_OpeningFcn(hObject, eventdata, handles, varargin)
-global fusionDone value VISPoints IRPoints
+global fusionDone value VISPoints IRPoints x y
 handles.output = hObject;
 guidata(hObject, handles);
 set(handles.sldChangeImage, 'Min', 1);
 set(handles.sldChangeImage, 'Value', 1);
 value=get(handles.sldChangeImage, 'Value');
-set(handles.sldChangeImage, 'Max', 5);
-set(handles.sldChangeImage, 'SliderStep', [1/(5-1) , 10/(5-1) ]);
+set(handles.sldChangeImage, 'Max', 6);
+set(handles.sldChangeImage, 'SliderStep', [1/(6-1) , 10/(6-1) ]);
 set(handles.axesVIS, 'visible', 'off');
 set(handles.axesIR, 'visible', 'off');
 set(handles.axesIRVIS, 'visible', 'off')
 set(handles.axesStatisticHands, 'visible', 'off');
 set(handles.axesStatisticPoint, 'visible', 'off');
+x(1:6) = -1;
+y(1:6) = -1;
 VISPoints = [];
 IRPoints = [];
 fusionDone=false;
@@ -75,9 +77,9 @@ try
         imageFusion=imread(sprintf('fusion%d.jpg', value));
         axes(handles.axesIRVIS);
         imshow( imageFusion, 'initialMagnification', 'fit');
-        if(~isempty(x))
+        if(x(value)>-1)
             hold on;
-            plot(x,y,'.y', 'Markersize', 15);
+            plot(x(value),y(value),'.y', 'Markersize', 15);
         end
     else
         value=get(hObject, 'Value');
@@ -97,36 +99,52 @@ if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColo
 end
 
 function btnSelectPointsVIS_Callback(hObject, eventdata, handles)
-global VISPoints
-image = imread('images/_MG_1464.JPG');
+global VISPoints value imagesVIS
 figure
-imshow(image)
-[x_vis, y_vis] = ginput(4);
+imshow(imagesVIS{value})
+[x_vis(1), y_vis(1)] = ginput(1);
+hold on
+plot(x_vis(1),y_vis(1),'.y', 'Markersize', 15)
+[x_vis(2), y_vis(2)] = ginput(1);
+plot(x_vis(2),y_vis(2),'.y', 'Markersize', 15)
+[x_vis(3), y_vis(3)] = ginput(1);
+plot(x_vis(3),y_vis(3),'.y', 'Markersize', 15)
+[x_vis(4), y_vis(4)] = ginput(1);
+plot(x_vis(4),y_vis(4),'.y', 'Markersize', 15)
 close
 for i=1:1:4
     VISPoints = [VISPoints; x_vis(i) y_vis(i)];
 end
 
 function btnSelectPointsIR_Callback(hObject, eventdata, handles)
-global IRPoints
-image = imread('images/IMGT0450.PNG');
+global IRPoints value imagesIR
 figure
-imshow(image)
-[x_ir, y_ir] = ginput(4);
+imshow(imagesIR{value})
+[x_ir(1), y_ir(1)] = ginput(1);
+hold on
+plot(x_ir(1),y_ir(1),'.y', 'Markersize', 15)
+[x_ir(2), y_ir(2)] = ginput(1);
+plot(x_ir(2),y_ir(2),'.y', 'Markersize', 15)
+[x_ir(3), y_ir(3)] = ginput(1);
+plot(x_ir(3),y_ir(3),'.y', 'Markersize', 15)
+[x_ir(4), y_ir(4)] = ginput(1);
+plot(x_ir(4),y_ir(4),'.y', 'Markersize', 15)
 close
-for i=1:1:4
+for i=1:4
     IRPoints = [IRPoints; x_ir(i) y_ir(i)];
 end
 
 function btnSelectPoint_Callback(hObject, eventdata, handles)
 global value fusionDone x y
 if(fusionDone==true)
-    [x,y]=ginput(1);    
+    [xx,yy]=ginput(1);
+    x(1:6)=xx;
+    y(1:6)=yy;
     imageFusion=imread(sprintf('fusion%d.jpg', value));
     axes(handles.axesIRVIS);
     imshow( imageFusion, 'initialMagnification', 'fit');
     hold on;
-    plot(x,y,'.y', 'Markersize', 15);
+    plot(x(value),y(value),'.y', 'Markersize', 15);
 else
     msgbox('Nie wykonano fuzji zdjêæ!!', 'Warning','error');
 end
@@ -137,9 +155,9 @@ pointsRGBfusion=[];
 for i=1:length(imagesIR)
     %imageFusion=imread(sprintf('fusion%d.jpg', i));
     imageFusion=imagesIR{i};
-    pointsRGBfusion(i,:) = [imageFusion(round(x),round(y),1), ...
-        imageFusion(round(x),round(y),2), ...
-        imageFusion(round(x),round(y),3)];
+    pointsRGBfusion(i,:) = [imageFusion(round(x(i)),round(y(i)),1), ...
+        imageFusion(round(x(i)),round(y(i)),2), ...
+        imageFusion(round(x(i)),round(y(i)),3)];
     
     scaleBar=[imageFusion(5,:,1); imageFusion(5,:,2); imageFusion(5,:,3)];
     
@@ -156,4 +174,21 @@ end
 time = [0, 3, 5, 7, 12];
 
 axes(handles.axesStatisticHands);
-plot(time, temperature, '-r');
+plot(time, temperature(2:end), '-r');
+
+
+
+function btnChangePoint_Callback(hObject, eventdata, handles)
+global value fusionDone x y
+if(fusionDone==true)
+    [xx,yy]=ginput(1);
+    x(value)=xx;
+    y(value)=yy;
+    imageFusion=imread(sprintf('fusion%d.jpg', value));
+    axes(handles.axesIRVIS);
+    imshow( imageFusion, 'initialMagnification', 'fit');
+    hold on;
+    plot(x(value),y(value),'.y', 'Markersize', 15);
+else
+    msgbox('Nie wykonano fuzji zdjêæ!!', 'Warning','error');
+end
